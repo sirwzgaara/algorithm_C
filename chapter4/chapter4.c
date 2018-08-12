@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
+/* 泛型，这里用int，方便对key进行比较，可以是结构，调用者提供比较函数 */
+typedef int ElementType;
+
 #ifdef pseudocode
 /* 树的儿子兄弟表示法 */
 typedef struct TreeNode *PtrToNode
@@ -54,7 +58,7 @@ typedef struct PtrToNode Tree;
 
 struct TreeNode
 {
-	Element Element;
+	ElementType Element;
 	Tree Left;
 	Tree Right;
 };
@@ -62,6 +66,8 @@ struct TreeNode
 #endif
 
 /* 二叉查找树 */
+#define BINARY_SEARCH_TREE
+
 #ifdef BINARY_SEARCH_TREE
 
 struct TreeNode;
@@ -78,7 +84,7 @@ ElementType Retrieve(Position P);
 
 struct TreeNode
 {
-	ElementType X;
+	ElementType Element;
 	Position Left;
 	Position Right;
 };
@@ -99,10 +105,10 @@ Position Find(ElementType X, SearchTree T)
 {
 	if (NULL == T)
 		return NULL;
-	else if (X < T->X)
-		return Find(T->Left);
-	else if (X > T->X)
-		return Find(T->Right);
+	else if (X < T->Element)
+		return Find(X, T->Left);
+	else if (X > T->Element)
+		return Find(X, T->Right);
 	else
 		return T;
 }
@@ -136,7 +142,10 @@ SearchTree Insert(ElementType X, SearchTree T)
 	{
 		T = malloc(sizeof(struct TreeNode));
 		if (NULL == T)
-			FatalError("Out of space");
+		{
+			printf("Out of space\n");
+			return NULL;
+		}
 		else
 		{
 			T->Element = X;
@@ -151,18 +160,24 @@ SearchTree Insert(ElementType X, SearchTree T)
 	return T;
 }
 
-SearchTree Delete(Element X, SearchTree T)
+/* 递归删除指定key的节点 */
+SearchTree Delete(ElementType X, SearchTree T)
 {
 	Position TmpCell;
 
 	if (NULL == T)
-		Error("Element not found");
+	{
+		printf("element not found\n");
+		return T;
+	}
 	else if (X < T->Element)
 		T->Left = Delete(X, T->Left);
 	else if (X > T->Element)
 		T->Right = Delete(X, T->Right);
 	else if (T->Left && T->Right)
 	{
+		/* 用该节点右子树最小的节点替换该节点，查找和删除遍历了两次，可以写一个特殊的
+		   DeleteMin优化，只遍历一次 */
 		TmpCell = FindMin(T->Right);
 		T->Element = TmpCell->Element;
 		T->Right = Delete(T->Element, T->Right);
@@ -176,7 +191,6 @@ SearchTree Delete(Element X, SearchTree T)
 			T = T->Left;
 		free(TmpCell);
 	}
-
 	return T;
 }
 
