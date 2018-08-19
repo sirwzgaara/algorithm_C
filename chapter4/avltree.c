@@ -73,22 +73,32 @@ static int Height(Position P)
 		return P->Height;
 }
 
-AvlTree Insert(ElementType X, AvlTree T)
+static int Max(int a, int b)
 {
-	if (!T)
-	{
-		T = malloc(sizeof(struct AvlNode));
-		T->Element = X;
-		T->Left = T->Right = NULL;
-	}
-	else if (X < T->Element)
-	{
-		T->Left = Insert(X, T->Left);
-		if (Height(T->Left) - Height(T->Right) == 2)
-		{
-		}
-	}
-	else if (X > T->Element)
-	{
-	}
+	return a > b ? a : b;
+}
+
+static void updateHeight(Position P)
+{
+	P->Height = Max(Height(P->Left), Height(P->Right)) + 1;
+}
+
+static Position SingleRotateWithLeft(Position K2)
+{
+	Position K1 = K2->Left;
+	K2->Left = K1->Right;
+	K1->Right = K2;
+	updateHeight(K2);
+	updateHeight(K1);
+	return K1;
+}
+
+static Position SingleRotateWithRight(Position K1)
+{
+	Position K2 = K1->Right;
+	K1->Right = K2->Left;
+	K2->Left = K1;
+	updateHeight(K2);
+	updateHeight(K1);
+	return K2;
 }
