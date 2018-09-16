@@ -122,6 +122,7 @@ static Position DoubleRotateWithRight(Position K3)
 
 AvlTree Insert(ElementType X, AvlTree T)
 {
+	/* 递归终止条件，创建节点并返回 */
 	if (!T)
 	{
 		T = malloc(sizeof(struct AvlNode));
