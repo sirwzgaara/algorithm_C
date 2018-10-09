@@ -102,7 +102,7 @@ void DecreaseKey(int t, ElementType X, PriorityQueue H)
 }
 
 /* 将位置为t的节点的值增加X */
-void IncreaseKey(int t, ElementType X，PriorityQueue H)
+void IncreaseKey(int t, ElementType X, PriorityQueue H)
 {
     int i, Child;
     int newElement = H->Elements[t] - X;
@@ -120,7 +120,7 @@ void IncreaseKey(int t, ElementType X，PriorityQueue H)
     H->Elements[i] = newElement;
 }
 
-/* 删除位置为t的节点，先上浮到跟，然后deletemin */
+/* 删除位置为t的节点，先上浮到根，然后deletemin */
 void Delete(int t, PriorityQueue H)
 {
     DecreaseKey(t, 0x7fffffff, H);
@@ -150,7 +150,7 @@ void PercolateDown(int t, PriorityQueue H)
 PriorityQueue BuildHeap(ElementType *a, int N)
 {
     int i;
-    PriorityQueue H = initialize(N);
+    PriorityQueue H = Initialize(N);
 
     /* 将数字先全部插进去 */
     for (i = 0; i < N; i++)
