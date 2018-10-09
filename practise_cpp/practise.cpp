@@ -5,6 +5,7 @@ extern "C" {
 
 #include <iostream>
 #include <stack>
+#include <exception>
 using namespace std;
 
 /* 练习1，赋值运算符，思想是对异常的考虑 */
@@ -150,19 +151,110 @@ struct BinaryTreeNode_func6
     BinaryTreeNode_func6 * m_pRight;
 };
 
-BinaryTreeNode_func6 * Construct_Core(int * startPreorder, int * endPreorder,
-        int * startInorder, int * endInorder)
+BinaryTreeNode_func6 * Construct_Core
+(
+	int * startPreorder, 
+	int * endPreorder,
+    int * startInorder, 
+    int * endInorder
+)
 {
+	int rootvalue = startPreorder[0];
+	BinaryTreeNode_func6 * root = new BinaryTreeNode_func6();
+	root->m_nValue = rootvalue;
+	root->m_pLeft = root->m_pRight = NULL;
 
+    /* 递归终止条件 */
+	if (startPreorder == endPreorder)
+	{
+		if (startInorder == endInorder && *startPreorder == *startInorder)
+			return root;
+		else
+		{
+			cout << "invalid input" << endl;
+			return NULL;
+		}
+	}
+
+    /* 找到中序的根 */
+	int *rootInorder = startInorder;
+	while (rootInorder != endInorder && *rootInorder != rootvalue)
+		rootInorder++;
+
+	if (rootInorder == endInorder && *rootInorder != rootvalue)
+	{
+		cout << "invalid input" << endl;
+		return NULL;
+	}
+
+	int leftlength = rootInorder - startInorder;
+	int *leftPreorderEnd = startPreorder + leftlength;
+
+    /* 处理左和右边 */
+	if (leftlength > 0)
+		root->m_pLeft = Construct_Core(startPreorder + 1, leftPreorderEnd,
+							startInorder, rootInorder - 1);
+	if (leftlength < endInorder - startInorder)
+		root->m_pRight = Construct_Core(leftPreorderEnd + 1, endPreorder,
+							rootInorder + 1, endInorder);
+	return root;
 }
 
 BinaryTreeNode_func6 * Construct(int * preorder, int * inorder, int length)
 {
-    if (NULL == preorder || NULL == inorder || length <= 0)
-        return NULL;
+	if (NULL == preorder || NULL == inorder || length <= 0)
+		return NULL;
 
-    return Construct_core(preorder, preorder + length - 1, inorder, 
-            inorder + length - 1);
+	return Construct_Core(preorder, preorder + length - 1, inorder, 
+		inorder + length - 1);
+}
+
+/* 练习7，用两个栈实现队列 */
+/* 队列类模板 */
+template <typename T>
+class CQueue
+{
+public:
+	CQueue();
+	~CQueue();
+	void appendTail(const T & node);
+	T deleteHead();
+private:
+	stack<T> stack1;
+	stack<T> stack2;
+};
+
+template <typename T>
+void CQueue<T>::appendTail(const T & node)
+{
+	stack1.push(node);
+}
+
+template <typename T>
+T CQueue<T>::deleteHead()
+{
+	T tmp;
+
+	if (stack2.empty())
+	{
+		while (!stack1.empty())
+		{
+			tmp = stack1.top();
+			stack1.pop();
+			stack2.push(tmp);
+		}
+	}
+
+	if (!stack2.empty())
+	{
+		tmp = stack2.top();
+		stack2.pop();
+		return tmp;
+	}
+	else
+	{
+		// TODO:
+	}
 }
 
 int main()
