@@ -26,6 +26,22 @@ void SetUnion(DisjSet S, SetType Root1, SetType Root2)
     S[Root2] = Root1;
 }
 
+#ifdef HEIGHT
+void SetUnion(DisjSet S, SetType Root1, SetType Root2)
+{
+    /* 若Root2更深，那么将Root1合并到Root2上 */
+    if (S[Root2] < S[Root1])
+        S[Root1] = S[Root2];
+    else
+    {
+        /* 若高度相等，那么增加高度 */
+        if (S[Root1] == S[Root2])
+            S[Root1]--;
+        S[Root2] = Root1;
+    }
+}
+#endif
+
 /* 查找根，递归直到值为0，就找到了一个根，返回在数组中的位置 */
 SetType Find(ElementType X, DisjSet S)
 {
@@ -34,6 +50,16 @@ SetType Find(ElementType X, DisjSet S)
     else
         return Find(S[X], S);
 }
+
+#ifdef path_compression
+SetType Find(ElementType X, DisjSet S)
+{
+    if (S[X] <= 0)
+        return X;
+    else
+        return S[X] = Find(X, S);
+}
+#endif
 
 void main()
 {
