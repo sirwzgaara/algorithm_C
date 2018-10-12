@@ -57,7 +57,7 @@ SetType Find(ElementType X, DisjSet S)
     if (S[X] <= 0)
         return X;
     else
-        return S[X] = Find(X, S);
+        return S[X] = Find(S[X], S);
 }
 #endif
 
